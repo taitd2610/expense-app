@@ -2,7 +2,7 @@
 import axios from "axios";
 
 export default function createTransaction(req, res) {
-  const url = `${process.env.BASE_URL}/create`;
+  const url = `${process.env.BASE_URL}/transactions/create`;
   const transaction = req.body;
 
   try {
