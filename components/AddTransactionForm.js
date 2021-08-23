@@ -23,18 +23,32 @@ const AddTransactionForm = () => {
   }, []);
 
   const handleAddTransaction = async () => {
-    await axios.post("/api/transactions/create", transaction);
-    setTransaction({
-      description: "",
-      category: "",
-      date: new Date(),
-      transactionType: "",
-      amount: "",
-    });
+    if (handleValidation()) {
+      await axios.post("/api/transactions/create", transaction);
+      setTransaction({
+        description: "",
+        category: "",
+        date: new Date(),
+        transactionType: "",
+        amount: "",
+      });
+    }
+  };
+
+  const handleValidation = () => {
+    if (transaction.amount === "") {
+      alert("Tiền chi không được để trống!");
+      return false;
+    }
+    if (transaction.category === "") {
+      alert("Danh mục không được để trống!");
+      return false;
+    }
+    return true;
   };
 
   return (
-    <form className="w-full max-w-sm mt-4 p-4">
+    <form className="w-full max-w-sm my-6">
       <div className="md:flex md:items-center mb-6">
         <div className="md:w-1/3">
           <label
@@ -94,6 +108,7 @@ const AddTransactionForm = () => {
             onChange={(e) =>
               setTransaction({ ...transaction, amount: e.target.value })
             }
+            required
           />
         </div>
       </div>

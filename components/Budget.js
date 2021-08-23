@@ -2,7 +2,7 @@ import { useState } from "react";
 const Budget = () => {
   const [budget, setBudget] = useState(0);
   return (
-    <div className="p-4">
+    <div className="">
       <div className="grid md:grid-cols-3 gap-4">
         <div className="flex justify-between items-center bg-[#E1E3E4] p-2 rounded-lg">
           <p>Budget:{`${budget}đ`}</p>

@@ -4,7 +4,10 @@ import axios from "axios";
 
 export default function getTransactions(req, res) {
   const url = `${process.env.BASE_URL}/transactions`;
-  axios.get(process.env.BASE_URL).then((response) => {
-    res.status(200).json(response.data);
+
+  axios.get(url).then((response) => {
+    const transactions = response.data.allTransactions.data;
+    transactions.sort((a, b) => b.date.localeCompare(a.date));
+    res.status(200).json(transactions);
   });
 }
