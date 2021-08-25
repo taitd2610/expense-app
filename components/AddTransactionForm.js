@@ -48,7 +48,7 @@ const AddTransactionForm = () => {
   };
 
   return (
-    <form className="w-full max-w-sm my-6">
+    <form className="w-full max-w-sm">
       <div className="md:flex md:items-center mb-6">
         <div className="md:w-1/3">
           <label

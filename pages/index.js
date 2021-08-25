@@ -19,8 +19,14 @@ export default function Home() {
       {/* Main content */}
       <main className="p-4">
         <Budget />
-        <AddTransactionForm />
-        <Transactions />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-between my-6">
+          <div>
+            <AddTransactionForm />
+          </div>
+          <div className="md:col-span-2">
+            <Transactions />
+          </div>
+        </div>
       </main>
     </div>
   );
