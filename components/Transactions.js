@@ -1,39 +1,73 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import axios from "axios";
+import DatePicker, { registerLocale } from "react-datepicker";
+import vi from "date-fns/locale/vi";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/outline";
 
 import { numberWithCommas } from "../utils/utils";
+import { LOSS } from "../constants/transactionType";
+
+registerLocale("vi", vi);
 
 const Transactions = () => {
+  const [startDate, setStartDate] = useState(new Date());
   const [dailyTransactions, setDailyTransactions] = useState([]);
 
   // Get all transactions
   useEffect(async () => {
-    const result = await axios.get("/api/transactions");
-
-    setDailyTransactions(result.data);
+    await axios
+      .get("/api/transactions")
+      .then((res) => setDailyTransactions(res.data));
   }, []);
 
-  console.log(dailyTransactions);
-
   return (
-    <div className="">
+    <div className="bg-blue-50 rounded-sm shadow p-4">
+      {/* Month Picker */}
+      <div className="flex mb-4 items-center justify-between">
+        <ChevronLeftIcon className="h-8 cursor-pointer" />
+
+        <DatePicker
+          className="outline-none font-bold text-lg text-center w-full bg-transparent"
+          selected={startDate}
+          onChange={(date) => setStartDate(date)}
+          locale="vi"
+          dateFormat="MM/yyyy"
+          showMonthYearPicker
+        />
+
+        <ChevronRightIcon className="h-8 cursor-pointer" />
+      </div>
       {dailyTransactions.map((dailyTransaction) => (
         <div>
-          <div className="flex justify-between bg-gray-100 border px-2">
-            <p className="">{dailyTransaction.date}</p>
-            <p className="">{`-${numberWithCommas(
+          <div className="flex justify-between bg-red-100 rounded-md py-2 border px-2">
+            <p className="font-semibold">{dailyTransaction.date}</p>
+            <p
+              className={`font-semibold ${
+                dailyTransaction.totalDaily > 0
+                  ? "text-profitColor"
+                  : "text-lossColor"
+              }`}
+            >{`${dailyTransaction.totalDaily > 0 ? "+" : ""}${numberWithCommas(
               dailyTransaction.totalDaily
             )}đ`}</p>
           </div>
 
           <div class="divide-y divide-light-blue-400">
             {dailyTransaction.transactions.map((transaction) => (
-              <div className="flex justify-between px-2 py-2">
+              <div
+                className={`flex justify-between px-2 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md ${
+                  transaction.categoryType === LOSS
+                    ? "text-lossColor"
+                    : "text-profitColor"
+                }`}
+              >
                 <p className="font-semibold">
-                  {transaction.category}
+                  {transaction.categoryName}
                   <span className="ml-2 font-light text-sm">{`(${transaction.description})`}</span>
                 </p>
-                <p>{`${numberWithCommas(transaction.amount)}đ`}</p>
+                <p>{`${transaction.amount > 0 ? "+" : ""}${numberWithCommas(
+                  transaction.amount
+                )}đ`}</p>
               </div>
             ))}
           </div>

@@ -1,150 +1,245 @@
 import axios from "axios";
+import Image from "next/image";
 import React, { useState, useEffect } from "react";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import vi from "date-fns/locale/vi";
+import Swal from "sweetalert2";
+
+import lossSvg from "../public/loss.svg";
+import profitSvg from "../public/profit.svg";
+import { LOSS, PROFIT } from "../constants/transactionType";
+
+registerLocale("vi", vi);
 
 const AddTransactionForm = () => {
   const [startDate, setStartDate] = useState(new Date());
+
   const [transaction, setTransaction] = useState({
     description: "",
-    category: "",
-    date: new Date(),
-    transactionType: "",
-    amount: "",
+    categoryId: "",
+    date: new Date().toLocaleDateString(),
+    amount: 0,
   });
 
   const [categories, setCategories] = useState([]);
 
-  console.log(transaction);
+  const [transactionType, setTransactionType] = useState(LOSS);
+
+  const [dynamicClassLoss, setDynamicClassLoss] = useState(
+    "flex items-center justify-center cursor-pointer pb-4 border-b-4 border-lossColor"
+  );
+
+  const [dynamicClassProfit, setDynamicClassProfit] = useState(
+    "flex items-center justify-center cursor-pointer pb-4"
+  );
 
   // Get all categories
   useEffect(async () => {
-    const categories = await axios.get("/api/categories");
-    setCategories(categories.data.allCategories.data);
-  }, []);
+    await axios.get(`/api/categories?type=${transactionType}`).then((res) => {
+      setCategories(res.data.allCategories.data);
+    });
+  }, [transactionType]);
 
   const handleAddTransaction = async () => {
     if (handleValidation()) {
-      await axios.post("/api/transactions/create", transaction);
+      // Format data after call API
+      if (transactionType === LOSS) transaction.amount = -transaction.amount;
+
+      await axios.post("/api/transactions/create", transaction).then(
+        (response) => {
+          console.log(response);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+
+      Swal.fire({
+        title: "Tạo mới giao dịch thành công!",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
       setTransaction({
         description: "",
-        category: "",
-        date: new Date(),
-        transactionType: "",
-        amount: "",
+        categoryId: "",
+        date: new Date().toLocaleDateString(),
+        amount: 0,
       });
     }
   };
 
   const handleValidation = () => {
     if (transaction.amount === "") {
-      alert("Tiền chi không được để trống!");
+      Swal.fire({
+        title: "Lỗi!",
+        text: "Số tiền không được để trống",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
       return false;
     }
-    if (transaction.category === "") {
-      alert("Danh mục không được để trống!");
+    if (transaction.categoryId === "") {
+      Swal.fire({
+        title: "Lỗi!",
+        text: "Danh mục không được để trống",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
       return false;
     }
     return true;
   };
 
   return (
-    <form className="w-full max-w-sm">
-      <div className="md:flex md:items-center mb-6">
-        <div className="md:w-1/3">
-          <label
-            class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-            for="inline-full-name"
-          >
-            Ngày:
-          </label>
+    <div class="bg-red-50 rounded-sm shadow p-4">
+      {/* Tab */}
+      <div class="text-lg grid grid-cols-2 justify-between mb-6">
+        <div
+          class={dynamicClassLoss}
+          onClick={() => {
+            setTransactionType(LOSS);
+            setDynamicClassLoss(
+              `flex items-center justify-center cursor-pointer pb-4 border-b-4 border-lossColor`
+            );
+            setDynamicClassProfit(
+              `flex items-center justify-center cursor-pointer pb-4`
+            );
+          }}
+        >
+          <span className="text-lossColor">Tiền chi</span>
+          <Image src={lossSvg} width="36px" height="36px"></Image>
         </div>
-        <div class="md:w-2/3">
-          <DatePicker
-            className="bg-gray-50 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 focus:outline-none focus:bg-white focus:border-blue-500"
-            selected={startDate}
-            onChange={(date, e) => {
-              setStartDate(date);
-              setTransaction({ ...transaction, description: e.target.value });
-            }}
-          />
-        </div>
-      </div>
-      <div className="md:flex md:items-center mb-6">
-        <div className="md:w-1/3">
-          <label
-            class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-            for="inline-full-name"
-          >
-            Ghi chú:
-          </label>
-        </div>
-        <div class="md:w-2/3">
-          <input
-            class="bg-gray-50 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-            id="inline-full-name"
-            type="text"
-            value={transaction.description}
-            onChange={(e) =>
-              setTransaction({ ...transaction, description: e.target.value })
-            }
-          />
-        </div>
-      </div>
-      <div className="md:flex md:items-center mb-6">
-        <div className="md:w-1/3">
-          <label
-            class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-            for="inline-full-name"
-          >
-            Tiền chi:
-          </label>
-        </div>
-        <div class="md:w-2/3">
-          <input
-            class="bg-gray-50 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-            id="inline-full-name"
-            type="number"
-            value={transaction.amount}
-            onChange={(e) =>
-              setTransaction({ ...transaction, amount: e.target.value })
-            }
-            required
-          />
+
+        <div
+          class={dynamicClassProfit}
+          onClick={() => {
+            setTransactionType(PROFIT);
+            setDynamicClassLoss(
+              `flex items-center justify-center cursor-pointer pb-4`
+            );
+            setDynamicClassProfit(
+              `flex items-center justify-center cursor-pointer pb-4 border-b-4 border-profitColor`
+            );
+          }}
+        >
+          <span className="text-profitColor">Tiền thu</span>
+          <Image src={profitSvg} width="36px" height="36spx"></Image>
         </div>
       </div>
 
-      {/* Category */}
-      <div className="md:flex md:items-center mb-6">
-        <div className="md:w-1/3">
-          <label
-            class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-            for="inline-full-name"
-          >
-            Danh mục:
-          </label>
+      {/* Form */}
+      <form className="w-full max-w-sm">
+        <div className="md:flex md:items-center mb-6">
+          <div className="md:w-1/3">
+            <label
+              class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
+              for="inline-full-name"
+            >
+              Ngày
+            </label>
+          </div>
+          <div class="md:w-2/3">
+            <DatePicker
+              className="bg-gray-50 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 focus:outline-none focus:bg-white focus:border-blue-500"
+              locale="vi"
+              dateFormat="dd/MM/yyyy"
+              selected={startDate}
+              onChange={(date) => {
+                setStartDate(date);
+                setTransaction({
+                  ...transaction,
+                  date: date.toLocaleDateString(),
+                });
+              }}
+            />
+          </div>
         </div>
-        <div class="md:w-2/3">
-          <select
-            class="bg-gray-50 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-            onChange={(e) =>
-              setTransaction({ ...transaction, category: e.target.value })
-            }
-          >
-            <option>Chọn danh mục</option>
-            {categories.map((category) => (
-              <option>{category.categoryName}</option>
-            ))}
-          </select>
+
+        <div className="md:flex md:items-center mb-6">
+          <div className="md:w-1/3">
+            <label
+              class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
+              for="inline-full-name"
+            >
+              Ghi chú
+            </label>
+          </div>
+          <div class="md:w-2/3">
+            <input
+              class="bg-gray-50 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+              id="inline-full-name"
+              type="text"
+              value={transaction.description}
+              onChange={(e) =>
+                setTransaction({ ...transaction, description: e.target.value })
+              }
+            />
+          </div>
         </div>
-      </div>
-      <button
-        class="shadow bg-blue-500 hover:bg-blue-600 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-        type="button"
-        onClick={handleAddTransaction}
-      >
-        Nhập khoản chi
-      </button>
-    </form>
+        <div className="md:flex md:items-center mb-6">
+          <div className="md:w-1/3">
+            <label
+              class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
+              for="inline-full-name"
+            >
+              {transactionType === LOSS ? "Tiền chi" : "Tiền thu"}
+            </label>
+          </div>
+          <div class="md:w-2/3">
+            <input
+              class="bg-gray-50 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              id="inline-full-name"
+              type="number"
+              value={transaction.amount}
+              onChange={(e) =>
+                setTransaction({
+                  ...transaction,
+                  amount: e.target.value,
+                })
+              }
+            />
+          </div>
+        </div>
+
+        {/* Category */}
+        <div className="md:flex md:items-center mb-6">
+          <div className="md:w-1/3">
+            <label
+              class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
+              for="inline-full-name"
+            >
+              Danh mục
+            </label>
+          </div>
+          <div class="md:w-2/3">
+            <select
+              class="bg-gray-50 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              onChange={(e) =>
+                setTransaction({ ...transaction, categoryId: e.target.value })
+              }
+            >
+              <option value="">Chọn danh mục</option>
+              {categories.map((category) => (
+                <option value={category.id}>{category.categoryName}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="w-full flex items-center justify-center">
+          <button
+            class={`justify-center shadow focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded ${
+              transactionType === LOSS ? "bg-[#F07281]" : "bg-[#8AC9FE]"
+            }`}
+            type="button"
+            onClick={handleAddTransaction}
+          >
+            {transactionType === LOSS ? "Nhập khoản chi" : "Nhập khoản thu"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

@@ -5,11 +5,13 @@ export default function createTransaction(req, res) {
   const url = `${process.env.BASE_URL}/transactions/create`;
   const transaction = req.body;
 
-  try {
-    axios.post(url, transaction).then((res) => {
-      res.status(200).json("Create successfully");
+  axios
+    .post(url, transaction)
+    .then((response) => {
+      res.status(200).json("Create successfully!");
+    })
+    .catch((error) => {
+      console.log(error.message);
+      res.status(500).end();
     });
-  } catch (error) {
-    console.log(error.message);
-  }
 }
