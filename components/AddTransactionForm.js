@@ -11,8 +11,16 @@ import { LOSS, PROFIT } from "../constants/transactionType";
 
 registerLocale("vi", vi);
 
-const AddTransactionForm = () => {
+const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
   const [startDate, setStartDate] = useState(new Date());
+
+  useEffect(async () => {
+    if (transactionId) {
+      await axios
+        .get(`/api/transactions/${transactionId}`)
+        .then((res) => setTransaction(res.data.transaction.data[0]));
+    }
+  }, [transactionId]);
 
   const [transaction, setTransaction] = useState({
     description: "",
@@ -61,6 +69,10 @@ const AddTransactionForm = () => {
         timer: 1500,
       });
 
+      // Callback
+      setCurrentTransaction(transaction);
+
+      // Reset form
       setTransaction({
         description: "",
         categoryId: "",
@@ -90,6 +102,18 @@ const AddTransactionForm = () => {
       return false;
     }
     return true;
+  };
+
+  const clear = () => {
+    transactionId = null;
+
+    // Reset form
+    setTransaction({
+      description: "",
+      categoryId: "",
+      date: new Date().toLocaleDateString(),
+      amount: 0,
+    });
   };
 
   return (
@@ -153,6 +177,7 @@ const AddTransactionForm = () => {
                   date: date.toLocaleDateString(),
                 });
               }}
+              value={transaction.date}
             />
           </div>
         </div>
@@ -219,6 +244,7 @@ const AddTransactionForm = () => {
               onChange={(e) =>
                 setTransaction({ ...transaction, categoryId: e.target.value })
               }
+              value={transaction.categoryId}
             >
               <option value="">Chọn danh mục</option>
               {categories.map((category) => (
@@ -227,7 +253,7 @@ const AddTransactionForm = () => {
             </select>
           </div>
         </div>
-        <div className="w-full flex items-center justify-center">
+        <div className="w-full grid grid-cols-1 gap-3 items-center justify-center">
           <button
             class={`justify-center shadow focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded ${
               transactionType === LOSS ? "bg-[#F07281]" : "bg-[#8AC9FE]"
@@ -235,7 +261,26 @@ const AddTransactionForm = () => {
             type="button"
             onClick={handleAddTransaction}
           >
-            {transactionType === LOSS ? "Nhập khoản chi" : "Nhập khoản thu"}
+            {transactionId
+              ? "Chỉnh sửa"
+              : transactionType === LOSS
+              ? "Nhập khoản chi"
+              : "Nhập khoản thu"}
+          </button>
+
+          <button
+            className={`shadow focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded bg-red-500 ${
+              transactionId ? "" : "hidden"
+            }`}
+          >
+            Xoá
+          </button>
+
+          <button
+            className="shadow focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded bg-blue-500"
+            onClick={clear}
+          >
+            Clear
           </button>
         </div>
       </form>

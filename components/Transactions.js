@@ -9,7 +9,7 @@ import { LOSS } from "../constants/transactionType";
 
 registerLocale("vi", vi);
 
-const Transactions = () => {
+const Transactions = ({ currentTransaction, setTransactionId }) => {
   const [startDate, setStartDate] = useState(new Date());
   const [dailyTransactions, setDailyTransactions] = useState([]);
 
@@ -18,7 +18,7 @@ const Transactions = () => {
     await axios
       .get("/api/transactions")
       .then((res) => setDailyTransactions(res.data));
-  }, []);
+  }, [currentTransaction]);
 
   return (
     <div className="bg-blue-50 rounded-sm shadow p-4">
@@ -33,6 +33,7 @@ const Transactions = () => {
           locale="vi"
           dateFormat="MM/yyyy"
           showMonthYearPicker
+          value={startDate}
         />
 
         <ChevronRightIcon className="h-8 cursor-pointer" />
@@ -60,6 +61,9 @@ const Transactions = () => {
                     ? "text-lossColor"
                     : "text-profitColor"
                 }`}
+                onClick={() => {
+                  setTransactionId(transaction.transactionId);
+                }}
               >
                 <p className="font-semibold">
                   {transaction.categoryName}
