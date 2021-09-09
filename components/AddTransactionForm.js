@@ -117,7 +117,7 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
   };
 
   return (
-    <div class="bg-red-50 rounded-sm shadow p-4">
+    <div class="bg-red-50 rounded-sm shadow p-4 dark:bg-dark">
       {/* Tab */}
       <div class="text-lg grid grid-cols-2 justify-between mb-6">
         <div

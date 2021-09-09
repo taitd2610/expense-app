@@ -19,7 +19,7 @@ export default function Home() {
       <Header />
 
       {/* Main content */}
-      <main className="p-4 text-gray-700">
+      <main className="p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-between my-6">
           <div>
             <AddTransactionForm

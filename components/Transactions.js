@@ -2,7 +2,7 @@ import React, { useState, useEffect, forwardRef } from "react";
 import axios from "axios";
 import DatePicker, { registerLocale } from "react-datepicker";
 import vi from "date-fns/locale/vi";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/outline";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/solid";
 
 import { numberWithCommas } from "../utils/utils";
 import { LOSS } from "../constants/transactionType";
@@ -21,13 +21,13 @@ const Transactions = ({ currentTransaction, setTransactionId }) => {
   }, [currentTransaction]);
 
   return (
-    <div className="bg-blue-50 rounded-sm shadow p-4">
+    <div className="bg-blue-50 rounded-sm shadow p-4 dark:bg-dark ">
       {/* Month Picker */}
       <div className="flex mb-4 items-center justify-between">
-        <ChevronLeftIcon className="h-8 cursor-pointer" />
+        <ChevronLeftIcon className="h-8 cursor-pointer text-blue-500" />
 
         <DatePicker
-          className="outline-none font-bold text-lg text-center w-full bg-transparent"
+          className="outline-none font-bold text-lg text-center w-full bg-transparent dark:text-light"
           selected={startDate}
           onChange={(date) => setStartDate(date)}
           locale="vi"
@@ -36,7 +36,7 @@ const Transactions = ({ currentTransaction, setTransactionId }) => {
           value={startDate}
         />
 
-        <ChevronRightIcon className="h-8 cursor-pointer" />
+        <ChevronRightIcon className="h-8 text-blue-500 cursor-pointer" />
       </div>
       {dailyTransactions.map((dailyTransaction) => (
         <div>
