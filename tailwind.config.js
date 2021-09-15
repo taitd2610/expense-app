@@ -15,6 +15,10 @@ module.exports = {
         darker: "var(--color-darker)",
         light: "var(--color-light)",
       },
+
+      height: {
+        screenHalf: "50vh",
+      },
     },
   },
   variants: {

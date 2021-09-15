@@ -25,7 +25,7 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
   const [transaction, setTransaction] = useState({
     description: "",
     categoryId: "",
-    date: new Date().toLocaleDateString(),
+    date: new Date().toISOString().split("T")[0],
     amount: 0,
   });
 
@@ -48,6 +48,7 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
     });
   }, [transactionType]);
 
+  // Add new transaction
   const handleAddTransaction = async () => {
     if (handleValidation()) {
       // Format data after call API
@@ -76,7 +77,7 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
       setTransaction({
         description: "",
         categoryId: "",
-        date: new Date().toLocaleDateString(),
+        date: new Date().toISOString().split("T")[0],
         amount: 0,
       });
     }
@@ -111,7 +112,7 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
     setTransaction({
       description: "",
       categoryId: "",
-      date: new Date().toLocaleDateString(),
+      date: new Date().toISOString().split("T")[0],
       amount: 0,
     });
   };
@@ -174,7 +175,7 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
                 setStartDate(date);
                 setTransaction({
                   ...transaction,
-                  date: date.toLocaleDateString(),
+                  date: date.toISOString().split("T")[0],
                 });
               }}
               value={transaction.date}
