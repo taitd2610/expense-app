@@ -13,6 +13,14 @@ registerLocale("vi", vi);
 
 const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
   const [startDate, setStartDate] = useState(new Date());
+  const [isAddCategory, setIsAddCategory] = useState(false);
+  const [category, setCategory] = useState({});
+  const [transaction, setTransaction] = useState({
+    description: "",
+    categoryId: "",
+    date: new Date().toISOString().split("T")[0],
+    amount: 0,
+  });
 
   useEffect(async () => {
     if (transactionId) {
@@ -22,15 +30,7 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
     }
   }, [transactionId]);
 
-  const [transaction, setTransaction] = useState({
-    description: "",
-    categoryId: "",
-    date: new Date().toISOString().split("T")[0],
-    amount: 0,
-  });
-
   const [categories, setCategories] = useState([]);
-
   const [transactionType, setTransactionType] = useState(LOSS);
 
   const [dynamicClassLoss, setDynamicClassLoss] = useState(
@@ -159,7 +159,7 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
         <div className="md:flex md:items-center mb-6">
           <div className="md:w-1/3">
             <label
-              class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
+              class="block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4"
               for="inline-full-name"
             >
               Ngày
@@ -186,7 +186,7 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
         <div className="md:flex md:items-center mb-6">
           <div className="md:w-1/3">
             <label
-              class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
+              class="block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4"
               for="inline-full-name"
             >
               Ghi chú
@@ -207,7 +207,7 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
         <div className="md:flex md:items-center mb-6">
           <div className="md:w-1/3">
             <label
-              class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
+              class="block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4"
               for="inline-full-name"
             >
               {transactionType === LOSS ? "Tiền chi" : "Tiền thu"}
@@ -230,10 +230,10 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
         </div>
 
         {/* Category */}
-        <div className="md:flex md:items-center mb-6">
+        <div className="md:flex md:items-center mb-2">
           <div className="md:w-1/3">
             <label
-              class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
+              class="block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4"
               for="inline-full-name"
             >
               Danh mục
@@ -254,6 +254,66 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
             </select>
           </div>
         </div>
+
+        {/* Add new category */}
+        <div className="flex justify-end">
+          <button
+            className="mb-4 text-gray-500 text-sm font-bold"
+            onClick={() => {
+              if (isAddCategory) {
+                setIsAddCategory(false);
+              } else {
+                setIsAddCategory(true);
+              }
+            }}
+          >
+            Thêm danh mục
+          </button>
+        </div>
+
+        {isAddCategory ? (
+          <div className="px-4">
+            <div className="md:flex md:items-center mb-3">
+              <div className="md:w-1/3">
+                <label
+                  class="block text-sm text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4"
+                  for="inline-full-name"
+                >
+                  Tên danh mục
+                </label>
+              </div>
+
+              <div class="md:w-2/3">
+                <input
+                  class="bg-gray-50 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 text-sm leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                  id="inline-full-name"
+                  type="text"
+                  value={transaction.description}
+                  onChange={(e) =>
+                    setTransaction({
+                      ...transaction,
+                      description: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                className="text-sm py-1 cursor-pointer bg-blue-500 text-white px-2 rounded-md mb-6"
+                onClick={() => {
+                  setIsAddCategory(false);
+                }}
+              >
+                Thêm
+              </button>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+
         <div className="w-full grid grid-cols-1 gap-3 items-center justify-center">
           <button
             class={`justify-center shadow focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded ${
