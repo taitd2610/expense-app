@@ -5,7 +5,7 @@ const Report = () => {
 
   useEffect(async () => {
     await axios
-      .get(`/api/transactions/${transactionId}`)
+      .get(`/api/transactions/totalMonth`)
       .then((res) => setTotalMonth(res.data));
   }, []);
 
