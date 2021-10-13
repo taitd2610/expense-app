@@ -8,7 +8,6 @@ import Swal from "sweetalert2";
 import lossSvg from "../public/loss.svg";
 import profitSvg from "../public/profit.svg";
 import { LOSS, PROFIT } from "../constants/transactionType";
-import Report from "./Report";
 
 registerLocale("vi", vi);
 
@@ -351,8 +350,6 @@ const AddTransactionForm = ({ transactionId, setCurrentTransaction }) => {
           </div>
         </form>
       </div>
-
-      <Report />
     </div>
   );
 };

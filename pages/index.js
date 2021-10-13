@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import AddTransactionForm from "../components/AddTransactionForm";
 import Transactions from "../components/Transactions";
+import MonthlyReport from "../components/MonthlyReport";
 
 export default function Home() {
   const [currentTransaction, setCurrentTransaction] = useState(null);
@@ -20,7 +21,7 @@ export default function Home() {
 
       {/* Main content */}
       <main className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-between my-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 justify-between my-6">
           <div>
             <AddTransactionForm
               transactionId={transactionId}
@@ -32,6 +33,10 @@ export default function Home() {
               currentTransaction={currentTransaction}
               setTransactionId={setTransactionId}
             />
+          </div>
+
+          <div className="">
+            <MonthlyReport />
           </div>
         </div>
       </main>

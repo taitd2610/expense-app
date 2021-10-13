@@ -1,30 +1,21 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import { numberWithCommas } from "../utils/utils";
 
-const Report = () => {
-  const [totalMonth, setTotalMonth] = useState();
-
-  useEffect(async () => {
-    await axios
-      .get(`/api/transactions/totalMonth`)
-      .then((res) => setTotalMonth(res.data));
-  }, []);
-
-  return totalMonth ? (
+const TotalMonth = ({ totalMonth }) => {
+  return (
     <div className="bg-red-50 rounded-sm shadow p-4 dark:bg-dark">
       <div className="grid grid-cols-2 gap-4 mb-2">
         <div className="font-bold bg-white rounded-md p-2 flex justify-between">
           <p>Chi tiêu:</p>
           <p className="text-lossColor">
-            {numberWithCommas(totalMonth.expense)}
+            {numberWithCommas(totalMonth.expense.expenseTotal)}
           </p>
         </div>
 
         <div className="font-bold bg-white rounded-md p-2 flex justify-between items-center">
           <p>Thu nhập:</p>
           <p className="text-profitColor">
-            +{numberWithCommas(totalMonth.income)}
+            +{numberWithCommas(totalMonth.income.incomeTotal)}
           </p>
         </div>
       </div>
@@ -36,11 +27,7 @@ const Report = () => {
         </p>
       </div>
     </div>
-  ) : (
-    <div className="bg-red-50 rounded-sm shadow p-4 dark:bg-dark">
-      Loading data...
-    </div>
   );
 };
 
-export default Report;
+export default TotalMonth;
